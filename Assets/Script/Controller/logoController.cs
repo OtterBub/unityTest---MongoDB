@@ -24,6 +24,7 @@ public class logoController : MonoBehaviour {
     {
         fadePanel.GetComponent<Animator>().SetTrigger("fade");
 
+        PlayerPrefsPlus.SetBool("tutorial", false); //임시 조치
         if (!PlayerPrefsPlus.GetBool("tutorial"))
         {
             Invoke("displayTutorial", 1.0f);

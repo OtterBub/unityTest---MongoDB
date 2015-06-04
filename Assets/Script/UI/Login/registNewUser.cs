@@ -9,14 +9,14 @@ public class registNewUser : MonoBehaviour, IPointerUpHandler
     public InputField pwField;
     public InputField pw2Field;
 
-    public GameObject nextPanel;
+    public GameObject nowPage;
+    public GameObject nextPage;
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (nextPanel)
+        if (nextPage)
         {
-            Transform parentObj = gameObject.transform.parent.parent;
-            parentObj.SendMessage("movePanel", nextPanel, SendMessageOptions.DontRequireReceiver);
+            Framework.Instance.movePage(nowPage, nextPage);
         }
     }
 }

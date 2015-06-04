@@ -93,9 +93,11 @@ public class MongoDBControl
 	static public string GetFileUrl( string fileName )
 	{
 		QueryDocument query = new QueryDocument( "_id", "csyiQibg5TxMdhA9u" );
-		BsonDocument doc = Instance.mainPage.FindOne( query );
+		MongoCursor<BsonDocument> doc = Instance.mainPage.FindAll();
+		
+		foreach( BsonDocument val in doc )
+			PrintBsonDocument( val );
 
-		PrintBsonDocument( doc );
 
 		return "";
 	}
