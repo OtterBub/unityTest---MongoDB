@@ -51,11 +51,13 @@ public class metroGenerator : MonoBehaviour
 
 	void Start( )
 	{
-		MongoCollection<BsonDocument> coll = MongoDBControl.Instance.GetCollection<BsonDocument>( "imagePosts" );
+		MongoCollection<BsonDocument> coll = MongoDBControl.GetCollection<BsonDocument>( "mainPage" );
 		MongoCursor<BsonDocument> cur = coll.FindAll();
 		if ( ( MongoDBControl.text == null ) && ( text != null ) )
 			MongoDBControl.text = text;
 		MongoDBControl.text.text = "";
+
+		MongoDBControl.GetFileUrl("ss");
 
 		foreach( BsonDocument doc in cur )
 		{
