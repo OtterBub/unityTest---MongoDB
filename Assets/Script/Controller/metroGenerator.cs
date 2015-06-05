@@ -52,7 +52,12 @@ public class metroGenerator : MonoBehaviour {
     public float padding;
 	
 	void Start () {
-       
+		GameObject obj = GameObject.Find("DebugText");
+		if( obj != null )
+			MongoDBControl.Init( obj.GetComponent<Text>() );
+		else
+			MongoDBControl.Init( );
+
 		MongoCollection<BsonDocument> coll = MongoDBControl.GetCollection<BsonDocument>( "mainPage" );
 		
 		MongoCursor<BsonDocument> cur = coll.FindAll();

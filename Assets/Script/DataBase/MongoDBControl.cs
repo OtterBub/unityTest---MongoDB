@@ -41,6 +41,39 @@ public class MongoDBControl
 		}
 	}
 
+	public static void Init( Text txt = null )
+	{
+		if( init == false )
+		{
+			init = true;
+			if( txt != null ) {
+				Instance.debugText = txt;
+				Instance.debugText.text = "";
+			}
+			else
+				Debug.Log( "DebugText is null" );
+			//connectStr = "mongodb://175.126.82.238:27017";
+			Instance.client = new MongoClient( "mongodb://" + Instance.connectStr + Instance.dbPort );
+
+			Instance.server = Instance.client.GetServer( );
+			Instance.server.Connect( new TimeSpan( 2000 ) );
+			DebugText("Connect");
+
+			Instance.database = Instance.server.GetDatabase( "meteor" );
+			DebugText("Get DB");
+
+			Instance.mainPage = Instance.database.GetCollection<BsonDocument>( "mainPage" );
+			Instance.fileRecord = Instance.database.GetCollection<BsonDocument>( "cfs.images.filerecord" );
+			DebugText("Get Collection");
+		}
+	}
+
+	static public void DebugText( string str )
+	{
+		if( Instance.debugText != null )
+			Instance.debugText.text += str + '\n';
+	}
+
 	static public MongoCollection<T> GetCollection<T>(string collectionName)
 	{
 		return Instance.database.GetCollection<T>(collectionName);
@@ -93,39 +126,34 @@ public class MongoDBControl
 	static public string GetFileUrl( string fileKey )
 	{
 		string dir = Instance.connectStr + Instance.serverPort + "/cfs/files/images/";
-		string[] result = new string[10];
 
 		QueryDocument query = new QueryDocument( "_id", fileKey );
-		BsonDocument doc = Instance.fileRecord.FindOne();
+		BsonDocument doc = Instance.fileRecord.FindOne( query );
 
+		DebugText("Get File Url: " + doc["original"].AsBsonDocument["name"].AsString );
 
-		return dir + fileKey + '/' + doc["original"].AsBsonDocument["name"].AsString;
+		return "http://" + dir + fileKey + '/' + doc["original"].AsBsonDocument["name"].AsString;
 	}
 
 	private MongoDBControl( )
 	{
-		//connectStr = "mongodb://175.126.82.238:27017";
-		client = new MongoClient( "mongodb://" + connectStr + dbPort );
-
-		server = client.GetServer( );
-		server.Connect( new TimeSpan( 2000 ) );
 		
-		database = server.GetDatabase( "meteor" );
-		
-		mainPage = database.GetCollection<BsonDocument>("mainPage");
-		fileRecord = database.GetCollection<BsonDocument>("cfs.images.filerecord");
 	}
 
-	string connectStr = "localhost";
+	//string connectStr = "localhost";
+	string connectStr = "175.126.82.238";
 	string serverPort = ":3000";
-	string dbPort = ":3001";
+	string dbPort = ":27017";
+	//string dbPort = ":3001";
 
 	MongoServer server;
 	MongoClient client;
 	MongoDatabase database;
 	MongoCollection<BsonDocument> mainPage;
 	MongoCollection<BsonDocument> fileRecord;
+	Text debugText;
 
+	static bool init = false;
 	private static volatile MongoDBControl _instance;
 	private static object syncRoot = new object( );
 }
